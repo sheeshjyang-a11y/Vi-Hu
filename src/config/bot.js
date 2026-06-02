@@ -12,7 +12,7 @@ export const botConfig = {
   // - "invisible" = appears offline
   presence: {
     // Current online state shown on Discord.
-    status: "online",
+    status: "dnd",
 
     // Activity lines shown under the bot name.
     // `type` number mapping from Discord:
@@ -25,7 +25,7 @@ export const botConfig = {
     activities: [
       {
         // Text users will see (example: "Playing /help | Titan Bot").
-        name: "Made with ❤️",
+        name: "Made By K1erra & owned by Nygel⚡",
         // Activity type number (0 = Playing).
         type: 0, 
       },
@@ -88,8 +88,8 @@ export const botConfig = {
   embeds: {
     colors: {
       // Main brand colors.
-      primary: "#336699", 
-      secondary: "#2F3136", 
+      primary: "#FAC898", 
+      secondary: "#FFFACD", 
 
       // Standard status colors for success/error/warning/info messages.
       success: "#57F287", 
@@ -136,7 +136,7 @@ export const botConfig = {
     },
     footer: {
       // Default footer text used in bot embeds.
-      text: "Titan Bot",
+      text: "Vi-Hu Bot",
       // Footer icon URL (null = no icon).
       icon: null,
     },
@@ -160,28 +160,28 @@ export const botConfig = {
       // Plural display name.
       namePlural: "coins",
       // Currency symbol shown in balances.
-      symbol: "$",
+      symbol: "₱",
     },
 
     // Starting balance for new users.
     startingBalance: 0,
 
     // Maximum bank amount before upgrades (if upgrades are used).
-    baseBankCapacity: 100000,
+    baseBankCapacity: 100000000000000,
 
     // Daily reward amount.
-    dailyAmount: 100,
+    dailyAmount: 500,
 
     // Work command random payout range.
-    workMin: 10,
-    workMax: 100,
+    workMin: 1,
+    workMax: 1000,
 
     // Beg command random payout range.
-    begMin: 5,
-    begMax: 50,
+    begMin: 1,
+    begMax: 5000,
 
     // Chance to succeed when robbing (0.4 = 40%).
-    robSuccessRate: 0.4,
+    robSuccessRate: 2.4,
 
     // Jail time after failed rob (milliseconds).
     // 3600000 = 1 hour.
@@ -289,7 +289,7 @@ export const botConfig = {
   // =========================
   verification: {
     // Message shown when posting the verification panel.
-    defaultMessage: "Click the button below to verify yourself and gain access to the server!",
+    defaultMessage: "Click the button below to verify yourself and gain access to the Virtual Hustlers!",
 
     // Text on the verification button.
     defaultButtonText: "Verify",
