@@ -81,7 +81,7 @@ export default {
             await dmChannel.send({
                 embeds: [
                     successEmbed(
-                        anonymous ? "Message from someone" : `Message from ${interaction.user.tag}`,
+                        anonymous ? "Message from the someone" : `Message from ${interaction.user.tag}`,
                         sanitized
                     ).setFooter({
                         text: `You cannot reply to this message. | Logger ID: ${interaction.id}`
@@ -106,14 +106,11 @@ export default {
                 }
             });
 
-            await InteractionHelper.safeEditReply(interaction, {
-    content: "‎",
-    embeds: [],
-    components: [],
-});
-    
-await interaction.deleteReply().catch(() => {});
-return;
+            return await InteractionHelper.safeEditReply(interaction, {
+                embeds: [
+                    successEmbed(
+                        "DM Sent",
+                        `Successfully sent a message to ${targetUser.tag}`
                     ),
                 ],
             });
