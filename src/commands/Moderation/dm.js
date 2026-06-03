@@ -1,10 +1,10 @@
-import { SlashCommandBuilder, PermissionFlagsBits, PermissionsBitField, ChannelType, MessageFlags } from 'discord.js';
-import { createEmbed, errorEmbed, successEmbed, infoEmbed, warningEmbed } from '../../utils/embeds.js';
-import { logEvent } from '../../utils/moderation.js';
+```js
+import { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } from 'discord.js';
+import { errorEmbed, successEmbed } from '../../utils/embeds.js';
 import { logger } from '../../utils/logger.js';
 import { sanitizeMarkdown } from '../../utils/sanitization.js';
-
 import { InteractionHelper } from '../../utils/interactionHelper.js';
+
 export default {
     data: new SlashCommandBuilder()
         .setName("dm")
@@ -24,30 +24,34 @@ export default {
         .addBooleanOption(option =>
             option
                 .setName("anonymous")
-                .setDescription("Send the message anonymously (default: false)")
+                .setDescription("Send the message anonymously")
                 .setRequired(false)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
         .setDMPermission(false),
+
     category: "Moderation",
 
-    async execute(interaction, config, client) {
+    async execute(interaction) {
         const deferSuccess = await InteractionHelper.safeDefer(interaction);
+
         if (!deferSuccess) {
             logger.warn(`DM interaction defer failed`, {
                 userId: interaction.user.id,
                 guildId: interaction.guildId,
                 commandName: 'dm'
             });
+
             return;
         }
 
-    const targetUser = interaction.options.getUser("user");
+        const targetUser = interaction.options.getUser("user");
         const message = interaction.options.getString("message");
         const anonymous = interaction.options.getBoolean("anonymous") || false;
 
         try {
-            
+
+            // Message length check
             if (message.length > 2000) {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
@@ -60,7 +64,7 @@ export default {
                 });
             }
 
-            
+            // Prevent bot DMs
             if (targetUser.bot) {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
@@ -73,64 +77,62 @@ export default {
                 });
             }
 
-            
+            // Sanitize message
             const sanitized = sanitizeMarkdown(message);
 
+            // Create DM channel
             const dmChannel = await targetUser.createDM();
-            
+
+            // Send DM
             await dmChannel.send({
                 embeds: [
                     successEmbed(
-                        anonymous ? "Message from the someone" : `Message from ${interaction.user.tag}`,
+                        anonymous
+                            ? "Message from someone"
+                            : `Message from ${interaction.user.tag}`,
                         sanitized
-                    ).setFooter({
-                        text: `You cannot reply to this message. | Logger ID: ${interaction.id}`
-                    })
+                    )
                 ]
             });
 
-            await logEvent({
-                client: interaction.client,
-                guild: interaction.guild,
-                event: {
-                    action: "DM Sent",
-                    target: `${targetUser.tag} (${targetUser.id})`,
-                    executor: `${interaction.user.tag} (${interaction.user.id})`,
-                    reason: `Anonymous: ${anonymous ? 'Yes' : 'No'}`,
-                    metadata: {
-                        userId: targetUser.id,
-                        moderatorId: interaction.user.id,
-                        anonymous,
-                        messageLength: sanitized.length
-                    }
-                }
+            // Invisible response
+            await InteractionHelper.safeEditReply(interaction, {
+                content: "‎",
+                embeds: [],
+                components: [],
             });
 
-            return await InteractionHelper.safeEditReply(interaction, {
-                embeds: [
-                    successEmbed(
-                        "DM Sent",
-                        `Successfully sent a message to ${targetUser.tag}`
-                    ),
-                ],
-            });
+            // Delete interaction reply
+            await interaction.deleteReply().catch(() => {});
+
+            return;
+
         } catch (error) {
+
             logger.error('DM command error:', error);
-            
-if (error.code === 50007) {
+
+            // User has DMs disabled
+            if (error.code === 50007) {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
-                        errorEmbed("Error", `Could not send a DM to ${targetUser.tag}. They may have DMs disabled.`),
+                        errorEmbed(
+                            "Error",
+                            `Could not send a DM to ${targetUser.tag}. They may have DMs disabled.`
+                        ),
                     ],
                 });
             }
-            
+
+            // Generic error
             return await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
-                    errorEmbed("Error", `Failed to send DM: ${error.message}`),
+                    errorEmbed(
+                        "Error",
+                        `Failed to send DM: ${error.message}`
+                    ),
                 ],
             });
         }
     }
 };
-
+```
