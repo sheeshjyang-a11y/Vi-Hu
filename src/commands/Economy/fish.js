@@ -5,9 +5,9 @@ import { withErrorHandling, createError, ErrorTypes } from '../../utils/errorHan
 import { MessageTemplates } from '../../utils/messageTemplates.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 
-const FISH_COOLDOWN = 45 * 60 * 1000; 
+const FISH_COOLDOWN = 2 * 10 * 1000; 
 const BASE_MIN_REWARD = 300;
-const BASE_MAX_REWARD = 900;
+const BASE_MAX_REWARD = 9000;
 const FISHING_ROD_MULTIPLIER = 1.5;
 
 const FISH_TYPES = [
