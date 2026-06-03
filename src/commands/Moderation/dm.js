@@ -110,7 +110,7 @@ export default {
                 embeds: [
                     successEmbed(
                         "DM Sent",
-                        `Successfully sent a message to ${}`
+                        `Successfully sent a message to ${targetUser.tag}`
                     ),
                 ],
             });
