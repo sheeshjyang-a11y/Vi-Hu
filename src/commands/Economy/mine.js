@@ -5,7 +5,7 @@ import { withErrorHandling, createError, ErrorTypes } from '../../utils/errorHan
 import { MessageTemplates } from '../../utils/messageTemplates.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 
-const MINE_COOLDOWN = 60 * 60 * 1000;
+const MINE_COOLDOWN = 10 * 10 * 100;
 const BASE_MIN_REWARD = 400;
 const BASE_MAX_REWARD = 1200;
 const PICKAXE_MULTIPLIER = 1.2;
