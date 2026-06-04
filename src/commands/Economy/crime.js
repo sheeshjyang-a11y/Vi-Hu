@@ -5,6 +5,7 @@ import { withErrorHandling, createError, ErrorTypes } from '../../utils/errorHan
 import { MessageTemplates } from '../../utils/messageTemplates.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 
+const CRIME_COOLDOWN = 60 * 60 * 1000;
 const MIN_CRIME_AMOUNT = 100;
 const MAX_CRIME_AMOUNT = 2000;
 const FAILURE_RATE = 0.4;
@@ -57,6 +58,16 @@ export default {
                 );
             }
 
+            if (now < lastCrime + CRIME_COOLDOWN) {
+                const timeLeft = Math.ceil((lastCrime + CRIME_COOLDOWN - now) / (1000 * 60));
+                throw createError(
+                    "Crime cooldown active",
+                    ErrorTypes.RATE_LIMIT,
+                    `You need to wait ${timeLeft} more minutes before committing another crime.`,
+                    { remaining: lastCrime + CRIME_COOLDOWN - now, cooldownType: 'crime' }
+                );
+            }
+
             const crimeType = interaction.options.getString("type").toLowerCase();
             const crime = CRIME_TYPES.find(
                 c => c.name.toLowerCase().replace(/\s+/g, '-') === crimeType
@@ -77,6 +88,7 @@ export default {
                 : 0;
 
             userData.cooldowns = userData.cooldowns || {};
+            userData.cooldowns.crime = now;
 
             if (isSuccess) {
                 userData.wallet = (userData.wallet || 0) + amountEarned;
@@ -106,5 +118,4 @@ export default {
             }
     }, { command: 'crime' })
 };
-
 
