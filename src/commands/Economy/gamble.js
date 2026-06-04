@@ -5,11 +5,10 @@ import { withErrorHandling, createError, ErrorTypes } from '../../utils/errorHan
 import { MessageTemplates } from '../../utils/messageTemplates.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 
-const BASE_WIN_CHANCE = 0.4;
+const BASE_WIN_CHANCE = 0.55;
 const CLOVER_WIN_BONUS = 0.1;
 const CHARM_WIN_BONUS = 0.08;
-const PAYOUT_MULTIPLIER = 2.0;
-const GAMBLE_COOLDOWN = 1 * 1 * 10;
+const PAYOUT_MULTIPLIER = 1.7;
 
 export default {
     data: new SlashCommandBuilder()
@@ -37,18 +36,6 @@ export default {
             let cloverCount = userData.inventory["lucky_clover"] || 0;
             let charmCount = userData.inventory["lucky_charm"] || 0;
 
-            if (now < lastGamble + GAMBLE_COOLDOWN) {
-                const remaining = lastGamble + GAMBLE_COOLDOWN - now;
-                const minutes = Math.floor(remaining / (1000 * 60));
-                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-
-                throw createError(
-                    "Gamble cooldown active",
-                    ErrorTypes.RATE_LIMIT,
-                    `You need to cool down before gambling again. Wait **${minutes}m ${seconds}s**.`,
-                    { remaining, cooldownType: 'gamble' }
-                );
-            }
 
             if (userData.wallet < betAmount) {
                 throw createError(
@@ -101,7 +88,6 @@ cashChange = -betAmount;
             }
 
             userData.wallet = (userData.wallet || 0) + cashChange;
-userData.lastGamble = now;
 
             await setEconomyData(client, guildId, userId, userData);
 
@@ -123,13 +109,15 @@ userData.lastGamble = now;
                 });
             } else {
                 resultEmbed.setFooter({
-                    text: `Next gamble available in 5 minutes. Base win chance: ${Math.round(BASE_WIN_CHANCE * 100)}%.`,
+                    text: `Base win chance: ${Math.round(BASE_WIN_CHANCE * 100)}%.`,
                 });
             }
 
             await InteractionHelper.safeEditReply(interaction, { embeds: [resultEmbed] });
     }, { command: 'gamble' })
 };
+
+
 
 
 
